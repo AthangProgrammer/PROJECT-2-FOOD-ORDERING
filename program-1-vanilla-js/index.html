@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Online Food Ordering System - Fresh meals, fast delivery, and real-time order tracking." />
+  <title>BiteExpress | Online Food Ordering System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ==================== HEADER & NAVBAR ==================== -->
+  <header class="site-header">
+    <div class="container header-container">
+      <div class="brand">
+        <a href="#home" class="logo">
+          <span class="logo-icon">🍔</span>
+          <span class="logo-text">Bite<strong>Express</strong></span>
+        </a>
+        <span class="badge program-badge">Program 1 &bull; Vanilla JS</span>
+      </div>
+
+      <nav class="nav-links">
+        <a href="#menu" class="nav-link active">Menu</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <button id="cartToggleBtn" class="cart-btn" aria-label="Open Shopping Cart">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-label">Cart</span>
+          <span id="cartCountBadge" class="cart-badge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <section id="home" class="hero-section">
+    <div class="container hero-container">
+      <div class="hero-content">
+        <span class="hero-tag">⚡ Fast 30-Minute Food Delivery</span>
+        <h1 class="hero-title">Delicious Food Delivered Warm To Your Doorstep</h1>
+        <p class="hero-subtitle">
+          Explore artisanal pizzas, flame-grilled burgers, fresh pasta, refreshing coolers, and handcrafted desserts made with premium ingredients.
+        </p>
+        <div class="hero-cta-group">
+          <a href="#menu" class="btn btn-primary">Browse Food Menu</a>
+          <button id="heroViewCartBtn" class="btn btn-secondary">View My Cart (<span id="heroCartCount">0</span>)</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card-float">
+          <span class="float-emoji">🍕</span>
+          <div>
+            <strong>100% Fresh</strong>
+            <small>Woodfired & Crisp</small>
+          </div>
+        </div>
+        <div class="hero-card-float float-bottom">
+          <span class="float-emoji">🛵</span>
+          <div>
+            <strong>Fast Delivery</strong>
+            <small>Average 25 mins</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main id="menu" class="main-content container">
+
+    <!-- SEARCH & FILTER TOOLBAR -->
+    <section class="toolbar-section" aria-label="Search and Filter Controls">
+      <div class="toolbar-card">
+        
+        <!-- Search Bar -->
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search food by name (e.g., Margherita, Truffle, Cold Brew)..." 
+            aria-label="Search food items by name"
+            autocomplete="off"
+          />
+          <button id="clearSearchBtn" class="clear-btn" title="Clear search" aria-label="Clear search" style="display: none;">&times;</button>
+        </div>
+
+        <!-- Filter Controls Row -->
+        <div class="filters-row">
+          
+          <!-- Category Dropdown / Pills -->
+          <div class="filter-group">
+            <label for="categoryFilter" class="filter-label">Category:</label>
+            <select id="categoryFilter" class="select-control" aria-label="Filter food items by category">
+              <option value="all">All Categories</option>
+              <!-- Dynamically populated or fallback options -->
+              <option value="Pizza">Pizza</option>
+              <option value="Burgers">Burgers</option>
+              <option value="Pasta">Pasta</option>
+              <option value="Beverages">Beverages</option>
+              <option value="Desserts">Desserts</option>
+            </select>
+          </div>
+
+          <!-- Price Sort Dropdown -->
+          <div class="filter-group">
+            <label for="sortSelect" class="filter-label">Sort By:</label>
+            <select id="sortSelect" class="select-control" aria-label="Sort food items by price">
+              <option value="default">Featured / Default</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="rating-desc">Rating: Highest First</option>
+              <option value="name-asc">Name: A to Z</option>
+            </select>
+          </div>
+
+          <!-- Reset Button -->
+          <button id="resetFiltersBtn" class="btn btn-outline" title="Reset all search and filter controls">
+            Reset Filters
+          </button>
+        </div>
+
+        <!-- Quick Category Filter Pills -->
+        <div id="categoryPills" class="category-pills" aria-label="Quick Category Filter">
+          <button class="pill-btn active" data-category="all">All</button>
+          <button class="pill-btn" data-category="Pizza">🍕 Pizza</button>
+          <button class="pill-btn" data-category="Burgers">🍔 Burgers</button>
+          <button class="pill-btn" data-category="Pasta">🍝 Pasta</button>
+          <button class="pill-btn" data-category="Beverages">🥤 Beverages</button>
+          <button class="pill-btn" data-category="Desserts">🍰 Desserts</button>
+        </div>
+
+        <!-- Results Counter & Status -->
+        <div class="results-meta">
+          <span id="resultsCount" class="results-count">Loading delicious menu...</span>
+          <span class="api-notice">📡 Loaded via Fetch API (GET)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOADING SPINNER -->
+    <div id="loadingSpinner" class="loading-state" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <p>Fetching food catalog from JSON database...</p>
+    </div>
+
+    <!-- ERROR MESSAGE BANNER -->
+    <div id="errorMessage" class="error-banner" style="display: none;" role="alert">
+      <div class="error-content">
+        <span class="error-icon">⚠️</span>
+        <div>
+          <h3 id="errorTitle">Unable to Load Food Menu</h3>
+          <p id="errorDescription">An error occurred while fetching food data. Please ensure local server is running.</p>
+        </div>
+      </div>
+      <button id="retryFetchBtn" class="btn btn-sm btn-primary">Retry Fetch</button>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <span class="empty-emoji">🍽️</span>
+      <h3>No Food Items Found</h3>
+      <p>No dishes matched your current search and filter criteria. Try adjusting your keywords or clearing the filters.</p>
+      <button id="emptyResetBtn" class="btn btn-primary">Clear Filters & View All</button>
+    </div>
+
+    <!-- FOOD ITEMS CATALOG GRID -->
+    <section id="foodContainer" class="food-grid" aria-label="Food Catalog Grid">
+      <!-- Dynamically generated food item cards will be inserted here -->
+    </section>
+
+    <!-- ==================== ABOUT & NOTICE SECTION ==================== -->
+    <section id="about" class="info-banner-section">
+      <div class="info-card">
+        <h3>ℹ️ Project 2 – Full Stack Architecture Overview</h3>
+        <p>
+          This is <strong>Program 1</strong> of the Online Food Ordering assignment. All catalog fetching uses the standard 
+          <code>Fetch API</code> with <code>async/await</code> to load <code>data/foods.json</code> via an HTTP <code>GET</code> request. 
+          Order placement simulates a complete client-side checkout and sends a prepared HTTP <code>POST</code> request. 
+          <em>(Full backend persistence with Node.js and Express will be integrated in subsequent programs.)</em>
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== SHOPPING CART DRAWER / SIDEBAR ==================== -->
+  <div id="cartBackdrop" class="cart-backdrop" aria-hidden="true"></div>
+  
+  <aside id="cartDrawer" class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cartDrawerTitle">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <span class="drawer-icon">🛒</span>
+        <h2 id="cartDrawerTitle">Your Cart</h2>
+        <span id="drawerCartBadge" class="badge">0 items</span>
+      </div>
+      <button id="closeCartBtn" class="close-drawer-btn" aria-label="Close Shopping Cart">&times;</button>
+    </div>
+
+    <!-- Cart Items Scrollable Container -->
+    <div id="cartItemsList" class="drawer-body">
+      <!-- Dynamic cart items rendered here -->
+    </div>
+
+    <!-- Empty Cart Visual State -->
+    <div id="cartEmptyState" class="cart-empty-state">
+      <span class="empty-cart-emoji">🛍️</span>
+      <h4>Your cart is empty</h4>
+      <p>Add some delicious dishes from our menu to start your order!</p>
+      <button id="cartBrowseBtn" class="btn btn-outline btn-sm">Explore Menu</button>
+    </div>
+
+    <!-- Cart Footer & Calculation Breakdown -->
+    <div id="cartFooter" class="drawer-footer" style="display: none;">
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>Subtotal</span>
+          <span id="cartSubtotal">$0.00</span>
+        </div>
+        <div class="price-row">
+          <span>Delivery Fee</span>
+          <span id="cartDeliveryFee">$2.99</span>
+        </div>
+        <div class="price-row text-muted">
+          <span>Tax / GST (5%)</span>
+          <span id="cartTax">$0.00</span>
+        </div>
+        <div class="price-divider"></div>
+        <div class="price-row total-row">
+          <span>Total Amount</span>
+          <span id="cartTotal">$0.00</span>
+        </div>
+        <p id="freeDeliveryHint" class="delivery-hint">💡 Free delivery on orders over $25.00!</p>
+      </div>
+
+      <div class="drawer-actions">
+        <button id="proceedCheckoutBtn" class="btn btn-primary btn-block">
+          Proceed to Checkout &rarr;
+        </button>
+        <button id="clearCartBtn" class="btn btn-text btn-block text-danger">
+          Clear Entire Cart
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==================== CHECKOUT MODAL / SECTION ==================== -->
+  <div id="checkoutBackdrop" class="modal-backdrop" aria-hidden="true" style="display: none;">
+    <div class="modal-window checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkoutModalTitle">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">📦</span>
+          <h2 id="checkoutModalTitle">Checkout & Delivery Details</h2>
+        </div>
+        <button id="closeCheckoutBtn" class="close-modal-btn" aria-label="Close Checkout">&times;</button>
+      </div>
+
+      <div class="modal-body checkout-grid">
+        
+        <!-- Checkout Form -->
+        <form id="checkoutForm" class="checkout-form" novalidate>
+          <div class="form-section-title">1. Customer Information</div>
+
+          <!-- Full Name -->
+          <div class="form-group">
+            <label for="custName" class="form-label">Full Name <span class="required">*</span></label>
+            <input 
+              type="text" 
+              id="custName" 
+              name="custName" 
+              class="form-control" 
+              placeholder="e.g. John Doe"
+              required 
+            />
+            <small id="nameError" class="field-error" style="display: none;"></small>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-group">
+            <label for="custPhone" class="form-label">Phone Number <span class="required">*</span></label>
+            <input 
+              type="tel" 
+              id="custPhone" 
+              name="custPhone" 
+              class="form-control" 
+              placeholder="e.g. 9876543210 (10 digits)"
+              required 
+            />
+            <small id="phoneError" class="field-error" style="display: none;"></small>
+          </div>
+
+          <div class="form-section-title">2. Delivery Address</div>
+
+          <!-- Address -->
+          <div class="form-group">
+            <label for="custAddress" class="form-label">Street Address & Apartment <span class="required">*</span></label>
+            <textarea 
+              id="custAddress" 
+              name="custAddress" 
+              class="form-control" 
+              rows="3" 
+              placeholder="e.g. Apt 4B, 124 Baker Street, Downtown"
+              required
+            ></textarea>
+            <small id="addressError" class="field-error" style="display: none;"></small>
+          </div>
+
+          <!-- Special Notes -->
+          <div class="form-group">
+            <label for="custNotes" class="form-label">Delivery Instructions (Optional)</label>
+            <input 
+              type="text" 
+              id="custNotes" 
+              name="custNotes" 
+              class="form-control" 
+              placeholder="e.g. Ring the bell, leave at the door, less spicy"
+            />
+          </div>
+
+          <div class="form-section-title">3. Payment Method</div>
+
+          <!-- Payment Method Options -->
+          <div class="payment-options">
+            <label class="payment-card">
+              <input type="radio" name="paymentMethod" value="COD" checked />
+              <span class="payment-details">
+                <span class="payment-title">💵 Cash on Delivery</span>
+                <span class="payment-desc">Pay cash when food arrives</span>
+              </span>
+            </label>
+
+            <label class="payment-card">
+              <input type="radio" name="paymentMethod" value="CARD" />
+              <span class="payment-details">
+                <span class="payment-title">💳 Credit / Debit Card</span>
+                <span class="payment-desc">Simulated Card Payment</span>
+              </span>
+            </label>
+
+            <label class="payment-card">
+              <input type="radio" name="paymentMethod" value="UPI" />
+              <span class="payment-details">
+                <span class="payment-title">📱 UPI / Net Banking</span>
+                <span class="payment-desc">Google Pay, PhonePe, Paytm</span>
+              </span>
+            </label>
+          </div>
+
+          <!-- Form Action Buttons -->
+          <div class="form-actions">
+            <button type="button" id="cancelCheckoutBtn" class="btn btn-secondary">Back to Cart</button>
+            <button type="submit" id="placeOrderBtn" class="btn btn-primary">
+              <span id="placeOrderBtnText">Place Order &amp; Pay</span>
+              <span id="placeOrderSpinner" class="btn-spinner" style="display: none;"></span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Order Summary Column -->
+        <div class="checkout-summary-col">
+          <div class="summary-card">
+            <h4>Order Summary</h4>
+            <div id="checkoutSummaryItems" class="checkout-items-preview">
+              <!-- Itemized mini summary -->
+            </div>
+            <div class="price-breakdown">
+              <div class="price-row">
+                <span>Items Subtotal</span>
+                <span id="checkoutSubtotal">$0.00</span>
+              </div>
+              <div class="price-row">
+                <span>Delivery</span>
+                <span id="checkoutDelivery">$2.99</span>
+              </div>
+              <div class="price-row text-muted">
+                <span>Tax (5%)</span>
+                <span id="checkoutTax">$0.00</span>
+              </div>
+              <div class="price-divider"></div>
+              <div class="price-row total-row">
+                <span>Grand Total</span>
+                <span id="checkoutGrandTotal">$0.00</span>
+              </div>
+            </div>
+            <div class="security-badge">
+              <span>🔒 100% Safe &amp; Secure Order Processing</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ORDER CONFIRMATION & STATUS MODAL ==================== -->
+  <div id="orderConfirmationModal" class="modal-backdrop" aria-hidden="true" style="display: none;">
+    <div class="modal-window confirmation-modal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+      <div class="modal-header bg-success-header">
+        <div class="modal-title-group">
+          <span class="modal-icon-success">🎉</span>
+          <div>
+            <h2 id="confirmModalTitle">Order Placed Successfully!</h2>
+            <p class="subtitle">Thank you for dining with BiteExpress</p>
+          </div>
+        </div>
+        <button id="closeConfirmBtn" class="close-modal-btn" aria-label="Close Confirmation">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Order ID & Meta Banner -->
+        <div class="order-id-banner">
+          <div>
+            <small>Order Reference ID</small>
+            <div id="confirmOrderId" class="order-id-code">#ORD-2026-0000</div>
+          </div>
+          <div class="order-timestamp">
+            <small>Order Placed At</small>
+            <div id="confirmOrderTime">Just Now</div>
+          </div>
+        </div>
+
+        <!-- Order Status Tracker -->
+        <div class="status-tracker-card">
+          <div class="status-tracker-header">
+            <h4>Live Order Status</h4>
+            <span id="currentStatusBadge" class="status-badge status-confirmed">Confirmed</span>
+          </div>
+
+          <div class="status-progress-bar-container">
+            <div id="statusProgressBar" class="status-progress-bar" style="width: 25%;"></div>
+          </div>
+
+          <div class="status-steps">
+            <div id="step-1" class="status-step active completed">
+              <div class="step-circle">✓</div>
+              <div class="step-label">Order Received</div>
+            </div>
+            <div id="step-2" class="status-step active">
+              <div class="step-circle">🍳</div>
+              <div class="step-label">Preparing Food</div>
+            </div>
+            <div id="step-3" class="status-step">
+              <div class="step-circle">🛵</div>
+              <div class="step-label">Out for Delivery</div>
+            </div>
+            <div id="step-4" class="status-step">
+              <div class="step-circle">🏠</div>
+              <div class="step-label">Delivered</div>
+            </div>
+          </div>
+
+          <div class="status-simulation-controls">
+            <span class="est-delivery">Estimated Delivery Time: <strong>25 - 35 mins</strong></span>
+            <button id="advanceStatusBtn" class="btn btn-outline btn-sm">
+              ⏩ Advance Status (Demo)
+            </button>
+          </div>
+        </div>
+
+        <!-- Receipt & Delivery Info -->
+        <div class="confirmation-details-grid">
+          <div class="detail-box">
+            <h4>Customer Details</h4>
+            <p><strong>Name:</strong> <span id="confirmName">John Doe</span></p>
+            <p><strong>Phone:</strong> <span id="confirmPhone">9876543210</span></p>
+            <p><strong>Address:</strong> <span id="confirmAddress">124 Baker Street</span></p>
+            <p><strong>Payment:</strong> <span id="confirmPayment">Cash on Delivery</span></p>
+          </div>
+
+          <div class="detail-box">
+            <h4>Order Items &amp; Bill</h4>
+            <div id="confirmItemsList" class="confirm-items-list">
+              <!-- Itemized list rendered here -->
+            </div>
+            <div class="confirm-bill-row">
+              <strong>Total Paid:</strong>
+              <strong id="confirmTotalPaid" class="text-primary">$0.00</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- API Mode Notice -->
+        <div id="apiDispatchNotice" class="api-dispatch-notice">
+          <small>
+            📌 <strong>HTTP POST Status:</strong> <span id="httpPostStatusText">Dispatched JSON request to backend</span>.
+            <br />
+            <em>(Program 1 Notice: Running in standalone frontend simulation mode. Backend endpoints will be persisted in Program 3 &amp; 4.)</em>
+          </small>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button id="orderAnotherBtn" class="btn btn-primary btn-block">Order More Food</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer id="contact" class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-icon">🍔</span>
+          <span class="logo-text">Bite<strong>Express</strong></span>
+        </div>
+        <p>Full Stack Development Lab Assignment &bull; Project 2 (Food Ordering System)</p>
+      </div>
+      <div class="footer-meta">
+        <p>&copy; 2026 BiteExpress. Built with HTML5, CSS3 &amp; Vanilla JavaScript.</p>
+        <p>College Lab Evaluation Edition &bull; Program 1</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
