@@ -1,0 +1,8 @@
+{
+  "name": "program-3-node",
+  "version": "1.0.0",
+  "description": "Online Food Ordering API using native Node.js only",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "license": "ISC"
+}

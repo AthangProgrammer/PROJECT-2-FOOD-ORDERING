@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "Margherita Pizza", "price": 8.99 },
+  { "id": 2, "name": "Veg Burger", "price": 5.49 },
+  { "id": 3, "name": "Pasta Alfredo", "price": 7.25 },
+  { "id": 4, "name": "French Fries", "price": 2.99 },
+  { "id": 5, "name": "Cold Coffee", "price": 3.5 }
+]
