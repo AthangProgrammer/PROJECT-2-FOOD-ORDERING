@@ -17,6 +17,13 @@ export async function api(path, { method = 'GET', body, token } = {}) {
   }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
+    // A 401 on a request that carried a token means the token expired (or is invalid):
+    // forget the saved login and go to the login page.
+    if (res.status === 401 && token) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.assign('/login');
+    }
     const err = new Error(data.error || 'Something went wrong');
     err.status = res.status;
     throw err;
