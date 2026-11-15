@@ -2,6 +2,12 @@
 
 React (Vite) + Express + MongoDB (Mongoose). JWT login, bcryptjs password hashing.
 
+## Live demo
+- Frontend (Vercel): https://project-2-food-ordering.vercel.app
+- Backend API (Render): https://foodhub-api-zwgn.onrender.com/api/health
+
+The backend runs on Render's free tier, so the first request after a period of inactivity can take 30–60 seconds.
+
 ```
 program-5-fullstack/
   server/   Express API  (models, routes, middleware)
