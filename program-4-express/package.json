@@ -1,0 +1,13 @@
+{
+  "name": "program-4-express",
+  "version": "1.0.0",
+  "description": "Online Food Ordering REST API (Express, JSON file storage)",
+  "main": "server.js",
+  "scripts": { "start": "node --env-file-if-exists=.env server.js" },
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
